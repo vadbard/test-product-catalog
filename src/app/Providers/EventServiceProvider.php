@@ -6,7 +6,7 @@ use App\Events\Model\CategoryDeletedEvent;
 use App\Events\Model\CategorySavedEvent;
 use App\Events\Model\ProductDeletedEvent;
 use App\Events\Model\ProductSavedEvent;
-use App\Listeners\ClearCategoryTreeCacheListener;
+use App\Listeners\ClearCategoryCachesListener;
 use App\Listeners\ClearProductCacheListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -19,10 +19,10 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         CategorySavedEvent::class => [
-            ClearCategoryTreeCacheListener::class,
+            ClearCategoryCachesListener::class,
         ],
         CategoryDeletedEvent::class => [
-            ClearCategoryTreeCacheListener::class,
+            ClearCategoryCachesListener::class,
         ],
 
         ProductSavedEvent::class => [

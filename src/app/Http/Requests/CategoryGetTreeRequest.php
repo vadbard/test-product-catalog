@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Category;
-use App\Repositories\Category\Dto\GetProductsByCategoryDto;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryGetTreeRequest extends FormRequest
@@ -18,17 +16,5 @@ class CategoryGetTreeRequest extends FormRequest
         return [
             'parentId' => 'integer|exists:categories,parent_id'
         ];
-    }
-
-    public function dto(): GetProductsByCategoryDto
-    {
-        $parent = null;
-        if ($this->input('parentId')) {
-            $parent = Category::findOrFail($this->input('parentId'));
-        }
-
-        return new GetProductsByCategoryDto([
-            'parent' => $parent,
-        ]);
     }
 }

@@ -28,7 +28,6 @@ class Product extends Model
         'deleted' => ProductDeletedEvent::class,
     ];
 
-
     public function relCategory(): BelongsTo
     {
         return $this->belongsTo(Category::class);

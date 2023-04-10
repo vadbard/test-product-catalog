@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Category;
-use App\Repositories\Category\Dto\GetProductsByCategoryDto;
+use App\Enums\SortOrderEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductsGetByCategory extends FormRequest
 {
@@ -16,19 +16,7 @@ class ProductsGetByCategory extends FormRequest
     public function rules(): array
     {
         return [
-            'categoryId' => 'integer|exists:categories,parent_id'
+            'sortName' => Rule::in(SortOrderEnum::cases())
         ];
-    }
-
-    public function dto(): GetProductsByCategoryDto
-    {
-        $parent = null;
-        if ($this->input('parentId')) {
-            $parent = Category::findOrFail($this->input('parentId'));
-        }
-
-        return new GetProductsByCategoryDto([
-            'parent' => $parent,
-        ]);
     }
 }

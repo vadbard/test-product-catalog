@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryGetTreeRequest;
+use App\Http\Requests\CategoryUpdateOneRequest;
 use App\Http\Resources\CategoryListItemResource;
 use App\Http\Resources\CategoryResource;
 use App\Repositories\CategoryRepositoryInterface;
+use App\Repositories\CategoryWriteRepositoryInterface;
 
 class CategoryController extends Controller
 {
@@ -25,5 +27,15 @@ class CategoryController extends Controller
         $tree = $repository->getTree($request->input('parentId', 0));
 
         return CategoryListItemResource::collection($tree);
+    }
+
+    public function updateOne(CategoryUpdateOneRequest         $request,
+                              int                              $categoryId,
+                              CategoryWriteRepositoryInterface $repositoryWrite,
+                              CategoryRepositoryInterface      $repository)
+    {
+        $repositoryWrite->updateById($categoryId, $request->dto());
+
+        return CategoryResource::make($repository->getById($categoryId));
     }
 }

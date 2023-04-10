@@ -3,34 +3,31 @@
 namespace App\Repositories;
 
 use App\Models\Product;
+use App\Services\Cache\ProductRepositoryCacheKeyService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
-class ProductCacheRepository extends AbstractCacheRepository implements ProductRepositoryInterface
+class ProductCacheRepository extends ProductRepository implements ProductRepositoryInterface
 {
-    protected string $cachePrefix = 'repository.product';
+    const CACHE_PREFIX = 'repository.product';
 
-    public function __construct(private ProductRepository $repository)
+    public function __construct(private readonly ProductRepository                $repository,
+                                private readonly ProductRepositoryCacheKeyService $cacheKeyService)
     {
 
     }
 
     public function getById(int $id): ?Product
     {
-        return Cache::remember($this->makeKey(__FUNCTION__, $id), 1440, function () use ($id) {
+        return Cache::remember($this->cacheKeyService->makeGetByIdKey($id), 1440, function () use ($id) {
             return $this->repository->getById($id);
         });
     }
 
     public function getByCategoryId(int $id): Collection
     {
-        return Cache::remember($this->makeKey(__FUNCTION__, $id), 1440, function () use ($id) {
+        return Cache::remember($this->cacheKeyService->makeGetByCategoryIdKey($id), 1440, function () use ($id) {
             return $this->repository->getByCategoryId($id);
         });
-    }
-
-    public function search(string $term): Collection
-    {
-        return $this->repository->search($term);
     }
 }
