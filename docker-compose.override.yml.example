@@ -1,0 +1,8 @@
+services:
+    app:
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        environment:
+            PHP_IDE_CONFIG: "serverName=Docker"

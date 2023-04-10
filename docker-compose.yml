@@ -1,0 +1,32 @@
+services:
+    app:
+        build:
+            dockerfile: ./docker/php/Dockerfile
+            target: dev-debug
+        volumes:
+            - ./src:/var/www/app
+            - ./logs/laravel:/var/www/app/storage/logs
+        depends_on:
+            - db
+    db:
+        image: postgres:12.11-alpine3.16
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=${DB_USERNAME}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_DATABASE}
+        ports:
+            - ${POSTGRES_PORT:-5432}:5432
+    webapp:
+        image: nginx:alpine
+        ports:
+            - ${HTTP_PORT:-80}:80
+        volumes:
+            - ./src:/var/www/app
+            - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - app
+
+volumes:
+    db-data: ~
