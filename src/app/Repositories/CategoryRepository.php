@@ -50,4 +50,35 @@ class CategoryRepository implements CategoryRepositoryInterface
     {
         return Category::find($id);
     }
+
+    public function getAllParents(Category $category): array
+    {
+        /** @var array<Category> $parents*/
+        $parents = [];
+
+        while(!is_null($category)) {
+            $category = $category->relParent;
+
+            if ($category) {
+                $parents[] = $category;
+            }
+        }
+
+        return $parents;
+    }
+
+    public function getAllChildrenIds(Category $category, array $ids = []): array
+    {
+        $ids[] = $category->id;
+
+        foreach ($category->relChildren as $category) {
+            $ids[] = $category->id;
+
+            if ($category->relChildren) {
+                $this->getAllChildrenIds($category);
+            }
+        }
+
+        return $ids;
+    }
 }

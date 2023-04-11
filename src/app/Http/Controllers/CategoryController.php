@@ -8,21 +8,26 @@ use App\Http\Resources\CategoryListItemResource;
 use App\Http\Resources\CategoryResource;
 use App\Repositories\CategoryRepositoryInterface;
 use App\Repositories\CategoryWriteRepositoryInterface;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CategoryController extends Controller
 {
-    public function getOne(int $categoryId, CategoryRepositoryInterface $repository)
+    public function getOne(mixed $categoryId, CategoryRepositoryInterface $repository)
     {
+        if (getType($categoryId) != 'integer') {
+            return response('', 404);
+        }
+
         $category = $repository->getById($categoryId);
 
         if (!$category) {
-            response('', 404);
+            return response('', 404);
         }
 
         return CategoryResource::make($category);
     }
 
-    public function getTree(CategoryGetTreeRequest $request, CategoryRepositoryInterface $repository)
+    public function getTree(CategoryGetTreeRequest $request, CategoryRepositoryInterface $repository): AnonymousResourceCollection
     {
         $tree = $repository->getTree($request->input('parentId', 0));
 
@@ -32,7 +37,7 @@ class CategoryController extends Controller
     public function updateOne(CategoryUpdateOneRequest         $request,
                               int                              $categoryId,
                               CategoryWriteRepositoryInterface $repositoryWrite,
-                              CategoryRepositoryInterface      $repository)
+                              CategoryRepositoryInterface      $repository): CategoryResource
     {
         $repositoryWrite->updateById($categoryId, $request->dto());
 

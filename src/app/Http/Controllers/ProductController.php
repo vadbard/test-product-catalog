@@ -8,10 +8,11 @@ use App\Http\Requests\ProductsGetByCategory;
 use App\Http\Resources\ProductListItemResource;
 use App\Http\Resources\ProductResource;
 use App\Repositories\ProductRepositoryInterface;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductController extends Controller
 {
-    public function getOne(int $productId, ProductRepositoryInterface $repository)
+    public function getOne(int $productId, ProductRepositoryInterface $repository): ProductResource
     {
         $product = $repository->getById($productId);
 
@@ -22,19 +23,22 @@ class ProductController extends Controller
         return ProductResource::make($product);
     }
 
-    public function getListByCategory(ProductsGetByCategory $request, int $categoryId, ProductRepositoryInterface $repository)
+    public function getListByCategory(ProductsGetByCategory      $request,
+                                      ProductRepositoryInterface $productRepository)
     {
+        $categoryId = $request->input('categoryId');
+
         $sortName = null;
         if ($request->input('sortName')) {
             $sortName = SortOrderEnum::from($request->input('sortName'));
         }
 
-        $products = $repository->getByCategoryId($categoryId, $sortName);
+        $products = $productRepository->getByCategoryId($categoryId, $sortName);
 
         return ProductListItemResource::collection($products);
     }
 
-    public function search(CategoryGetTreeRequest $request, ProductRepositoryInterface $repository)
+    public function search(CategoryGetTreeRequest $request, ProductRepositoryInterface $repository): AnonymousResourceCollection
     {
         $products = $repository->search($request->input('term', ''));
 

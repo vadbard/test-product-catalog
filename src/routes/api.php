@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/categories', [CategoryController::class, 'getTree']);
 Route::get('/categories/{categoryId}', [CategoryController::class, 'getOne']);
-Route::patch('/categories/{categoryId}', [CategoryController::class, 'updateOne']);
-Route::get('/categories/{categoryId}/products', [ProductController::class, 'getListByCategory']);
+Route::patch('/categories/{categoryId}', [CategoryController::class, 'updateOne'])->name('categories.updateCategory');
 
-Route::get('/products', [ProductController::class, 'search']);
+Route::get('/products', [ProductController::class, 'getListByCategory']);
+Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products/{productId}', [ProductController::class, 'getOne']);

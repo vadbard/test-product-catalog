@@ -22,6 +22,7 @@ class ProductListItemResource extends JsonResource
             'id' => $product->id,
             'name' => $product->name,
             'price' => $product->price,
+            'categoryId' => $product->category_id,
         ];
     }
 }

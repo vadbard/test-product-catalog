@@ -21,7 +21,7 @@ class ClearProductCacheListener
      */
     public function handle(ProductSavedEvent|ProductDeletedEvent $event): void
     {
-        $this->cacheClearService->clearById($event->product->id);
-        $this->cacheClearService->clearListByCategoryId($event->product->category_id);
+        $this->cacheClearService->clearProduct($event->product->id);
+        $this->cacheClearService->clearListsForProduct($event->product->category_id);
     }
 }

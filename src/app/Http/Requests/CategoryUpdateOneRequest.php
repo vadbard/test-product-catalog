@@ -15,7 +15,7 @@ class CategoryUpdateOneRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parentId' => 'integer|exists:categories,parent_id',
+            'parentId' => 'integer|exists:categories,id',
             'index' => 'integer',
         ];
     }

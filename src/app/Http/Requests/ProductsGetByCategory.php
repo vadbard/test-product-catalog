@@ -16,7 +16,8 @@ class ProductsGetByCategory extends FormRequest
     public function rules(): array
     {
         return [
-            'sortName' => Rule::in(SortOrderEnum::cases())
+            'categoryId' => 'required|integer|exists:categories,id',
+            'sortName' => Rule::in(SortOrderEnum::caseValues()),
         ];
     }
 }

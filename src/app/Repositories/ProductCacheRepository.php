@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\SortOrderEnum;
 use App\Models\Product;
 use App\Services\Cache\ProductRepositoryCacheKeyService;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,7 +25,7 @@ class ProductCacheRepository extends ProductRepository implements ProductReposit
         });
     }
 
-    public function getByCategoryId(int $id): Collection
+    public function getByCategoryId(int $id, SortOrderEnum $sortByName = null): Collection
     {
         return Cache::remember($this->cacheKeyService->makeGetByCategoryIdKey($id), 1440, function () use ($id) {
             return $this->repository->getByCategoryId($id);

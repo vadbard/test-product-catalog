@@ -23,7 +23,7 @@ class ProductResource extends JsonResource
             'name' => $product->name,
             'description' => $product->description,
             'price' => $product->price,
-            'category' => CategoryListItemResource::make($product->relCategory),
+            'category' => CategoryRelationResource::make($product->relCategory),
         ];
     }
 }
