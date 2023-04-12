@@ -1,0 +1,325 @@
+openapi: 3.0.0
+info:
+  title: Каталог товаров
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8081/api'
+    description: Development
+tags:
+  - name: categories
+    description: Категории
+  - name: products
+    description: Товары
+paths:
+  /categories:
+    get:
+      operationId: 'CategoryController::getTree'
+      tags:
+        - categories
+      parameters:
+        - in: query
+          name: parentId
+          schema:
+            type: integer
+          description: Идентификатор родителя, если 0 то нет родителя
+      responses:
+        '200':
+          description: Возвращает дерево категорий со всеми потомками
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryTreeList'
+        '422':
+          description: Ошибка в параметрах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /categories/{categoryId}:
+    get:
+      operationId: 'CategoryController::getOne'
+      tags:
+        - categories
+      parameters:
+        - in: path
+          required: true
+          name: categoryId
+          schema:
+            type: integer
+          description: Идентификатор категории
+      responses:
+        '200':
+          description: Возвращает объект категории
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryItem'
+    patch:
+      operationId: 'CategoryController::updateOne'
+      tags:
+        - categories
+      parameters:
+        - in: path
+          required: true
+          name: categoryId
+          schema:
+            type: integer
+          description: Идентификатор категории
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - index
+                - parentId
+              properties:
+                index:
+                  type: integer
+                  description: Порядок сортировки внутри родителя, меньшие значения вверху
+                parentId:
+                  type: integer
+                  description: Идентификатор родителя
+      responses:
+        '200':
+          description: Возвращает обновлённый объект категории
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryItem'
+        '422':
+          description: Ошибка в параметрах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /products:
+    get:
+      operationId: 'ProductController::getListByCategory'
+      tags:
+        - products
+      parameters:
+        - in: query
+          name: parentId
+          required: true
+          schema:
+            type: integer
+          description: Фильтрация по идентификатору категории
+        - in: query
+          name: sortName
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          description: Порядок сортировки по наименованию
+      responses:
+        '200':
+          description: Возвращает список товаров, включая товары всех дочерних категорий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '422':
+          description: Ошибка в параметрах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /products/search:
+    get:
+      operationId: 'ProductController::search'
+      tags:
+        - products
+      parameters:
+        - in: query
+          name: parentId
+          required: true
+          schema:
+            type: integer
+          description: Фильтрация по идентификатору категории
+        - in: query
+          name: sortName
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          description: Порядок сортировки по наименованию
+      responses:
+        '200':
+          description: Возвращает список товаров, включая товары всех дочерних категорий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+        '422':
+          description: Ошибка в параметрах
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /products/{productId}:
+    get:
+      operationId: 'ProductController::getOne'
+      tags:
+        - products
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: integer
+          description: Идентификатор товара
+      responses:
+        '200':
+          description: Возвращает объект товара
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductItem'
+
+components:
+  schemas:
+    ValidationError:
+      description: Ошибка в параметрах
+      type: object
+      required:
+        - message
+        - errors
+      properties:
+        message:
+          type: string
+          description: Сообщение об ошибке
+        errors:
+          type: object
+          description: Параметры запроса в которых есть ошибки
+          required:
+            - errors
+    ProductList:
+      description: Список товаров
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - price
+              - categoryId
+            properties:
+              id:
+                type: integer
+                description: Идентификатор товара
+              name:
+                type: string
+                description: Наименование товара
+              price:
+                type: integer
+                description: Цена
+              categoryId:
+                type: integer
+                description: Идентификатор категории
+
+    ProductItem:
+      description: Список товаров
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - id
+            - name
+            - price
+            - description
+            - category
+          properties:
+            id:
+              type: integer
+              description: Идентификатор товара
+            name:
+              type: string
+              description: Наименование товара
+            price:
+              type: string
+              description: Описание товара
+            category:
+              $ref: '#/components/schemas/CategoryRelationItem'
+
+    CategoryRelationItem:
+      description: Категория в составе других объектов
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          description: Идентификатор категории
+        name:
+          type: string
+          description: Наименование категории
+
+    CategoryTreeList:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - index
+              - children
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              index:
+                type: integer
+                description: Порядок сортировки, меньшие значения вверху
+              children:
+                type: array
+                description: Потомки этой категории, массив с такими же объектами как родительский
+                items:
+                  type: object
+
+    CategoryItem:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - name
+              - index
+              - parentId
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              index:
+                type: integer
+                description: Порядок сортировки, меньшие значения вверху
+              parentId:
+                type: integer
+                description: Идентификатор родителя

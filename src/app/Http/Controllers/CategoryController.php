@@ -14,9 +14,11 @@ class CategoryController extends Controller
 {
     public function getOne(mixed $categoryId, CategoryRepositoryInterface $repository)
     {
-        if (getType($categoryId) != 'integer') {
+        if (! is_numeric($categoryId)) {
             return response('', 404);
         }
+
+        $categoryId = (int) $categoryId;
 
         $category = $repository->getById($categoryId);
 

@@ -12,8 +12,14 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductController extends Controller
 {
-    public function getOne(int $productId, ProductRepositoryInterface $repository): ProductResource
+    public function getOne(mixed $productId, ProductRepositoryInterface $repository)
     {
+        if (! is_numeric($productId)) {
+            return response('', 404);
+        }
+
+        $productId = (int) $productId;
+
         $product = $repository->getById($productId);
 
         if (!$product) {

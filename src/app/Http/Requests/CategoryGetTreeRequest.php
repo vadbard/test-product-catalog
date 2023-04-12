@@ -14,7 +14,7 @@ class CategoryGetTreeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parentId' => 'integer|exists:categories,parent_id'
+            'term' => 'required|string'
         ];
     }
 }
